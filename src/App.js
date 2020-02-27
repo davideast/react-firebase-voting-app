@@ -5,21 +5,17 @@ import {
   SubSection, 
   QuestionHeading,
   VoteOptionList, 
-  VoteResultList,
   Container,
   BetweenSection,
 } from './components';
 
 function App() {
 
-  console.log(VoteOptionList);
-  console.log(VoteResultList);
-
   const voteResults = [
-    { text: 'Chocolate', percentage: '42%', selected: true },
-    { text: 'Vanilla', percentage: '18%' },
-    { text: 'Strawberry', percentage: '9%' },
-    { text: 'Rocky Road', percentage: '11%' },
+    { id: 'Chocolate', text: 'Chocolate', percentage: '42%', selected: true },
+    { id: 'Vanilla', text: 'Vanilla', percentage: '18%' },
+    { id: 'Strawberry', text: 'Strawberry', percentage: '9%' },
+    { id: 'Rocky Road', text: 'Rocky Road', percentage: '11%' },
   ];
 
   return (
@@ -39,7 +35,9 @@ function App() {
 
         <SubSection>
 
-          <VoteOptionList voteOptions={voteResults} />
+          <VoteOptionList 
+            onClick={(text) => { console.log(text); }}
+            voteOptions={voteResults} />
 
         </SubSection>
 
@@ -50,7 +48,7 @@ function App() {
             <button>
               <img className="h-8 w-8" src="/save.svg" alt="Save Icon" />
             </button>
-            
+
             <span>3,412 votes</span>
 
           </BetweenSection>
