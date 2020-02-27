@@ -5,18 +5,57 @@ import {
   SubSection, 
   QuestionHeading,
   VoteOptionList, 
+  VoteResultList,
   Container,
   BetweenSection,
 } from './components';
 
+
 function App() {
 
-  const voteResults = [
-    { id: 'Chocolate', text: 'Chocolate', percentage: '42%', selected: true },
-    { id: 'Vanilla', text: 'Vanilla', percentage: '18%' },
-    { id: 'Strawberry', text: 'Strawberry', percentage: '9%' },
-    { id: 'Rocky Road', text: 'Rocky Road', percentage: '11%' },
+  function updateVoteResults(vote, state, setState) {
+    const { results } = state;
+
+    // find the vote and ovewrite it to 100%
+    // this is only local right now, so we can
+    // just update for one vote until we add Firebase
+    const newResults = results.map(result => {
+      if(result.id === vote.id) {
+        return { ...result, percentage: '100%', selected: true };
+      }
+      return result;
+    });
+
+    // update state
+    setState({
+      ...state,
+      voted: true,
+      results: newResults,
+    });
+  }
+
+  const options = [
+    { id: 'Chocolate', text: 'Chocolate' },
+    { id: 'Vanilla', text: 'Vanilla' },
+    { id: 'Strawberry', text: 'Strawberry' },
+    { id: 'Rocky Road', text: 'Rocky Road' },
   ];
+
+  const results = options.map(option => ({ ...option, percentage: '0%' }));
+
+  const [state, setState] = React.useState({ 
+    question: { title: 'What is your favorite ice cream flavor?' },
+    options, 
+    results,
+    voted: false,
+  });
+
+  const viewToRender = state.voted ? 
+    <VoteResultList
+      voteResults={state.results} /> :
+    <VoteOptionList 
+      onClick={option => { updateVoteResults(option, state, setState); }}
+      voteOptions={state.options} />;
 
   return (
     <Container>
@@ -28,16 +67,14 @@ function App() {
         <SubSection>
           
           <QuestionHeading>
-            What is your favorite ice cream flavor?
+            {state.question.title}
           </QuestionHeading>
 
         </SubSection>
 
         <SubSection>
 
-          <VoteOptionList 
-            onClick={(text) => { console.log(text); }}
-            voteOptions={voteResults} />
+          {viewToRender}
 
         </SubSection>
 
@@ -45,9 +82,7 @@ function App() {
 
           <BetweenSection>
             
-            <button>
-              <img className="h-8 w-8" src="/save.svg" alt="Save Icon" />
-            </button>
+            <span>&nbsp;</span>
 
             <span>3,412 votes</span>
 
