@@ -9,7 +9,7 @@ function VoteResult({ text, percentage, selected }) {
     <div
       style={{ backgroundColor: selectedColor }} 
       className="flex items-center justify-between px-2 rounded-md">
-      <div style={{ width: percentage }} className="h-16 bg-orange flex items-center rounded-md my-4 px-4">
+      <div style={{ width: percentage }} className="transition-all duration-300 ease-out h-16 bg-orange flex items-center rounded-md my-4 px-4">
         <span className="text-white text-xl absolute">{text}</span>
       </div>
       <div>
