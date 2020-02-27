@@ -1,25 +1,65 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { 
+  Header,
+  MainSection, 
+  SubSection, 
+  QuestionHeading,
+  VoteOptionList, 
+  VoteResultList,
+  Container,
+  BetweenSection,
+} from './components';
 
 function App() {
+
+  console.log(VoteOptionList);
+  console.log(VoteResultList);
+
+  const voteResults = [
+    { text: 'Chocolate', percentage: '42%', selected: true },
+    { text: 'Vanilla', percentage: '18%' },
+    { text: 'Strawberry', percentage: '9%' },
+    { text: 'Rocky Road', percentage: '11%' },
+  ];
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+
+      <Header />
+
+      <MainSection>
+
+        <SubSection>
+          
+          <QuestionHeading>
+            What is your favorite ice cream flavor?
+          </QuestionHeading>
+
+        </SubSection>
+
+        <SubSection>
+
+          <VoteOptionList voteOptions={voteResults} />
+
+        </SubSection>
+
+        <SubSection>
+
+          <BetweenSection>
+            
+            <button>
+              <img className="h-8 w-8" src="/save.svg" alt="Save Icon" />
+            </button>
+            
+            <span>3,412 votes</span>
+
+          </BetweenSection>
+
+        </SubSection>
+
+      </MainSection>
+
+    </Container>
   );
 }
 

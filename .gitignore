@@ -8,6 +8,9 @@
 # testing
 /coverage
 
+/public/tailwind.css
+/firestore-debug.log
+
 # production
 /build
 
