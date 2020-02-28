@@ -9,62 +9,54 @@ import {
   Container,
   BetweenSection,
 } from '../components';
+import { useFirestoreDocData, useFirestoreCollectionData, useFirestore } from 'reactfire';
+import { firestore } from 'firebase/app';
 
-function fakeInitialData() {
-  const options = [
-    { id: 'Chocolate', text: 'Chocolate' },
-    { id: 'Vanilla', text: 'Vanilla' },
-    { id: 'Strawberry', text: 'Strawberry' },
-    { id: 'Rocky Road', text: 'Rocky Road' },
-  ];
-  const results = options.map(option => ({ ...option, percentage: '0%' }));
-  const question = 'What is your favorite ice cream flavor?';
-  const voted = false;
-  return { 
-    question,
-    options, 
-    results,
-    voted,
-  };
-}
-
-export default function VoteView() {
-  const { question, options, results, voted  } = fakeInitialData();
-
-  function updateVoteResults(vote, state, setState) {
-    const { results } = state;
-
-    // find the vote and ovewrite it to 100%
-    // this is only local right now, so we can
-    // just update for one vote until we add Firebase
-    const newResults = results.map(result => {
-      if(result.id === vote.id) {
-        return { ...result, percentage: '100%', selected: true };
-      }
-      return result;
-    });
-
-    // update state
-    setState({
-      ...state,
-      voted: true,
-      results: newResults,
-    });
-  }
-
-  const [state, setState] = React.useState({ 
-    question,
-    options, 
-    results,
-    voted,
+function calculateResults(votes, options, voted = {}) {
+  let totalCount = 0;
+  const voteCounts = options.map(option => {
+    const vote = votes.find(vote => vote.id === option.id) 
+      || { id: option.id, count: 0 };
+    totalCount = totalCount + vote.count;
+    return vote;
   });
 
-  const viewToRender = state.voted ? 
+  const results = voteCounts.map(vote => {
+    return {
+      ...vote,
+      selected: vote.id === voted.id,
+      text: vote.id,
+      percentage: `${Math.round((vote.count / totalCount) * 100)}%`
+    };
+  });
+
+  return { totalCount, results };
+}
+
+export default function VoteView({ pollId }) {
+  const db = useFirestore();
+  const docRef = db.collection('polls').doc(pollId);
+  const data = useFirestoreDocData(docRef, { idField: 'id' });
+  const votes = useFirestoreCollectionData(docRef.collection('votes'), {
+    idField: 'id'
+  });
+  const { question, options } = data;
+  const [voted, setVoted] = React.useState();
+  const { totalCount, results } = calculateResults(votes, options, voted);
+  
+  function updateVoteResults(vote, docRef, setVoted) {
+    docRef.collection('votes').doc(vote.id).set({
+      count: firestore.FieldValue.increment(1)
+    }, { merge: true });
+    setVoted(vote);
+  }
+  
+  const viewToRender = voted ? 
     <VoteResultList
-      voteResults={state.results} /> :
+      voteResults={results} /> :
     <VoteOptionList 
-      onClick={option => { updateVoteResults(option, state, setState); }}
-      voteOptions={state.options} />;
+      onClick={option => { updateVoteResults(option, docRef, setVoted); }}
+      voteOptions={options} />;
 
   return (
     <Container>
@@ -75,7 +67,7 @@ export default function VoteView() {
 
         <SubSection>
           
-          <QuestionHeading>{state.question}</QuestionHeading>
+          <QuestionHeading>{question}</QuestionHeading>
 
         </SubSection>
 
@@ -91,7 +83,7 @@ export default function VoteView() {
             
             <span>&nbsp;</span>
 
-            <span>3,412 votes</span>
+            <span>{totalCount.toLocaleString()} votes</span>
 
           </BetweenSection>
 

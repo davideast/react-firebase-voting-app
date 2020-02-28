@@ -1,6 +1,10 @@
 {
   "hosting": {
-    "public": "dist"
+    "public": "build",
+    "rewrites": [{
+      "source": "**",
+      "destination": "index.html"
+    }]
   },
   "emulators": {
     "firestore": {

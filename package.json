@@ -8,9 +8,11 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "firebase": "^7.9.1",
     "react": "^0.0.0-experimental-d28bd2994",
     "react-dom": "^0.0.0-experimental-d28bd2994",
-    "react-scripts": "3.4.0"
+    "react-scripts": "3.4.0",
+    "reactfire": "^2.0.1"
   },
   "scripts": {
     "tailwind": "tailwind build src/index.css -o public/tailwind.css",
