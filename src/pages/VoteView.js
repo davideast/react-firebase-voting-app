@@ -9,7 +9,11 @@ import {
   Container,
   BetweenSection,
 } from '../components';
-import { useFirestoreDocData, useFirestoreCollectionData, useFirestore } from 'reactfire';
+import { 
+  useFirestoreDocData, 
+  useFirestoreCollectionData, 
+  useFirestore 
+} from 'reactfire';
 import { firestore } from 'firebase/app';
 
 function calculateResults(votes, options, voted = {}) {
@@ -33,29 +37,30 @@ function calculateResults(votes, options, voted = {}) {
   return { totalCount, results };
 }
 
+function updateVoteResults(vote, votesCol, setVoted) {
+  votesCol.doc(vote.id).set(
+    { count: firestore.FieldValue.increment(1) }, 
+    { merge: true }
+  );
+  setVoted(vote);
+}
+
 export default function VoteView({ pollId }) {
   const db = useFirestore();
+  const settings = { idField: 'id' };
   const docRef = db.collection('polls').doc(pollId);
-  const data = useFirestoreDocData(docRef, { idField: 'id' });
-  const votes = useFirestoreCollectionData(docRef.collection('votes'), {
-    idField: 'id'
-  });
+  const votesCol = docRef.collection('votes');
+  const data = useFirestoreDocData(docRef, settings);
+  const votes = useFirestoreCollectionData(votesCol, settings);
   const { question, options } = data;
   const [voted, setVoted] = React.useState();
   const { totalCount, results } = calculateResults(votes, options, voted);
-  
-  function updateVoteResults(vote, docRef, setVoted) {
-    docRef.collection('votes').doc(vote.id).set({
-      count: firestore.FieldValue.increment(1)
-    }, { merge: true });
-    setVoted(vote);
-  }
   
   const viewToRender = voted ? 
     <VoteResultList
       voteResults={results} /> :
     <VoteOptionList 
-      onClick={option => { updateVoteResults(option, docRef, setVoted); }}
+      onClick={option => { updateVoteResults(option, votesCol, setVoted); }}
       voteOptions={options} />;
 
   return (

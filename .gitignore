@@ -10,6 +10,8 @@
 
 /public/tailwind.css
 /firestore-debug.log
+/firebase-debug.log
+/.firebase
 
 # production
 /build
