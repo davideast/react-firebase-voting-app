@@ -30,7 +30,7 @@ function Modal({ children, isOpen, onMaskClick }) {
           // allows click only for mask
           event.stopPropagation();
         }} 
-        className="modal-content relative m-auto bg-white text-black w-4/5 shadow-lg">
+        className="relative m-auto w-full flex justify-center px-4 rounded-lg">
         {children}
       </div>
     </div>

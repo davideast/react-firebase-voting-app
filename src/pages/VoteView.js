@@ -39,7 +39,7 @@ function calculateResults(votes, options, voted = {}) {
   return { totalCount, results };
 }
 
-function updateVoteResults({ vote, votesCol, setVoted, user, setModalOpen }) {
+function updateVoteResults({ vote, votesCol, setVoted, user }) {
   votesCol.doc(vote.id).set(
     { count: firestore.FieldValue.increment(1) },
     { merge: true }
@@ -61,7 +61,7 @@ export default function VoteView({ pollId }) {
   const user = useUser();
   // eslint-disable-next-line
   const isLoggedIn = user != undefined;
-  const loggedState = isLoggedIn ? 'loggedIn' : 'unknown';
+  const loggedInState = isLoggedIn ? 'loggedIn' : 'unknown';
 
   const updateMap = {
     loggedIn: updateVoteResults,
@@ -77,7 +77,13 @@ export default function VoteView({ pollId }) {
     <VoteOptionList
       voteOptions={options} 
       onClick={option => { 
-        updateMap[loggedState]({ option, votesCol, setVoted, user, setModalOpen });
+        updateMap[loggedInState]({ 
+          option, 
+          votesCol, 
+          setVoted, 
+          user, 
+          setModalOpen, 
+        });
       }}
     />;
 
@@ -120,7 +126,13 @@ export default function VoteView({ pollId }) {
       <Modal 
         onMaskClick={() => { setModalOpen(false); }}
         isOpen={isModalOpen}>
-        <h1>Sign In</h1>
+
+        <div className="h-64 flex justify-center items-center bg-white w-full rounded-lg">
+          <button className="bg-orange text-white p-4 rounded-lg text-bold">
+            SIGN IN AS GUEST
+          </button>
+        </div>
+
       </Modal>
 
     </>
