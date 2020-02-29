@@ -7,5 +7,5 @@ export default function FirebaseWrapped({ config }) {
     <FirebaseAppProvider firebaseConfig={config}>
       <App />
     </FirebaseAppProvider>
-  )
+  );
 }

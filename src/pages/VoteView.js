@@ -1,25 +1,27 @@
 import React from 'react';
-import { 
+import {
   Header,
-  MainSection, 
-  SubSection, 
+  MainSection,
+  SubSection,
   QuestionHeading,
-  VoteOptionList, 
+  VoteOptionList,
   VoteResultList,
   Container,
   BetweenSection,
+  Modal,
 } from '../components';
-import { 
-  useFirestoreDocData, 
-  useFirestoreCollectionData, 
-  useFirestore 
+import {
+  useFirestoreDocData,
+  useFirestoreCollectionData,
+  useFirestore,
+  useUser,
 } from 'reactfire';
 import { firestore } from 'firebase/app';
 
 function calculateResults(votes, options, voted = {}) {
   let totalCount = 0;
   const voteCounts = options.map(option => {
-    const vote = votes.find(vote => vote.id === option.id) 
+    const vote = votes.find(vote => vote.id === option.id)
       || { id: option.id, count: 0 };
     totalCount = totalCount + vote.count;
     return vote;
@@ -37,9 +39,9 @@ function calculateResults(votes, options, voted = {}) {
   return { totalCount, results };
 }
 
-function updateVoteResults(vote, votesCol, setVoted) {
+function updateVoteResults({ vote, votesCol, setVoted, user, setModalOpen }) {
   votesCol.doc(vote.id).set(
-    { count: firestore.FieldValue.increment(1) }, 
+    { count: firestore.FieldValue.increment(1) },
     { merge: true }
   );
   setVoted(vote);
@@ -54,48 +56,73 @@ export default function VoteView({ pollId }) {
   const votes = useFirestoreCollectionData(votesCol, settings);
   const { question, options } = data;
   const [voted, setVoted] = React.useState();
+  const [isModalOpen, setModalOpen] = React.useState(false);
   const { totalCount, results } = calculateResults(votes, options, voted);
-  
-  const viewToRender = voted ? 
+  const user = useUser();
+  // eslint-disable-next-line
+  const isLoggedIn = user != undefined;
+  const loggedState = isLoggedIn ? 'loggedIn' : 'unknown';
+
+  const updateMap = {
+    loggedIn: updateVoteResults,
+    unknown({ setModalOpen }) {
+      setModalOpen(true);
+    }
+  };
+
+  const viewToRender = voted ?
     <VoteResultList
       voteResults={results} /> :
-    <VoteOptionList 
-      onClick={option => { updateVoteResults(option, votesCol, setVoted); }}
-      voteOptions={options} />;
+
+    <VoteOptionList
+      voteOptions={options} 
+      onClick={option => { 
+        updateMap[loggedState]({ option, votesCol, setVoted, user, setModalOpen });
+      }}
+    />;
 
   return (
-    <Container>
+    <>
+      <Container>
 
-      <Header />
+        <Header />
 
-      <MainSection>
+        <MainSection>
 
-        <SubSection>
-          
-          <QuestionHeading>{question}</QuestionHeading>
+          <SubSection>
 
-        </SubSection>
+            <QuestionHeading>{question}</QuestionHeading>
 
-        <SubSection>
+          </SubSection>
 
-          {viewToRender}
+          <SubSection>
 
-        </SubSection>
+            {viewToRender}
 
-        <SubSection>
+          </SubSection>
 
-          <BetweenSection>
-            
-            <span>&nbsp;</span>
+          <SubSection>
 
-            <span>{totalCount.toLocaleString()} votes</span>
+            <BetweenSection>
 
-          </BetweenSection>
+              <span>&nbsp;</span>
 
-        </SubSection>
+              <span>{totalCount.toLocaleString()} votes</span>
 
-      </MainSection>
+            </BetweenSection>
 
-    </Container>
+          </SubSection>
+
+        </MainSection>
+
+      </Container>
+
+      <Modal 
+        onMaskClick={() => { setModalOpen(false); }}
+        isOpen={isModalOpen}>
+        <h1>Sign In</h1>
+      </Modal>
+
+    </>
   );
 }
