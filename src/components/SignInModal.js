@@ -7,7 +7,7 @@ export function SignInModal({ isOpen, setModalOpen }) {
       onMaskClick={() => { setModalOpen(false); }}
       isOpen={isOpen}>
 
-      <div className="h-64 flex justify-center items-center bg-white w-full rounded-lg">
+      <div className="h-64 w-3/4 flex justify-center items-center bg-white rounded-lg">
         <button className="bg-orange text-white p-4 rounded-lg text-bold">
           SIGN IN AS GUEST
         </button>

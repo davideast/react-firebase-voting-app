@@ -8,7 +8,7 @@ import {
   VoteResultList,
   Container,
   BetweenSection,
-  Modal,
+  SignInModal,
 } from '../components';
 import {
   useFirestoreDocData,
@@ -123,17 +123,7 @@ export default function VoteView({ pollId }) {
 
       </Container>
 
-      <Modal 
-        onMaskClick={() => { setModalOpen(false); }}
-        isOpen={isModalOpen}>
-
-        <div className="h-64 flex justify-center items-center bg-white w-full rounded-lg">
-          <button className="bg-orange text-white p-4 rounded-lg text-bold">
-            SIGN IN AS GUEST
-          </button>
-        </div>
-
-      </Modal>
+      <SignInModal isOpen={isModalOpen} setModalOpen={setModalOpen} />
 
     </>
   );

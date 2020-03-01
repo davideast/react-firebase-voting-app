@@ -33,6 +33,7 @@ function LoadingView() {
 function App() {
   return (
     <Router>
+      {/* Only needed for dev, will add landing page later */}
       <VoteWrapper path="/" />
       <VoteWrapper path="/poll/:id" />
     </Router>
