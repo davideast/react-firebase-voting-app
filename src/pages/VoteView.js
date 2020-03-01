@@ -30,7 +30,6 @@ function fakeInitialData() {
 
 export default function VoteView() {
   const { question, options, results, voted  } = fakeInitialData();
-
   function updateVoteResults(vote, state, setState) {
     const { results } = state;
 
